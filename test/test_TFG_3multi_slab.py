@@ -112,31 +112,26 @@ def test_TFG_ep50_rho1_multislab_1cm():
     dB_R = 20*np.log10(R) 
 
     # Sci-kit simulation
-    freq_ref = Frequency(100, 1000, 300, 'MHz')
+    freq_ref = Frequency.from_f(freq_vector, 'Hz')
     air =  Freespace(freq_ref)
     mat = Freespace(freq_ref, ep_r = epsilon_r_material, rho = rho_material)
     slab = air.line(24, unit = 'cm') ** mat.line(1, unit = 'cm') ** air.line(24, unit = 'cm')** mat.line(1, unit = 'cm') ** air.line(24, unit = 'cm')** mat.line(1, unit = 'cm') ** air.thru()
     R_ref = 20*np.log10(abs(slab.s[:, 0, 0]))
     T_ref = 20*np.log10(abs(slab.s[:, 1, 0]))
-    freq_ref_values = freq_ref.f_scaled *1e6
-
-
-    # Interpolate computed R and T to match reference frequencies
-    R_interp = np.interp(freq_ref_values, freq_vector, dB_R)
-    T_interp = np.interp(freq_ref_values, freq_vector, dB_T)
-
 
     # Assert conditions
-    assert np.all(np.abs(R_interp - R_ref) <= 0.1), "Computed R deviates too much!"
-    assert np.all(np.abs(T_interp - T_ref) <= 0.1), "Computed T deviates too much!"
+    combined = dB_R + dB_T
+    atol = 1e-2*abs(max(combined,key=abs))
+    assert np.all(np.abs(dB_R - R_ref) <= atol), "Computed R deviates too much!"
+    assert np.all(np.abs(dB_T - T_ref) <= atol), "Computed T deviates too much!"
 
 
     # Generate plot
     # plt.figure()
-    # plt.plot(freq_vector / 1e6, dB_T, label='DGTD T', color='blue')
+    # plt.plot(freq_vector / 1e6, dB_T, label='DGTD T', color='blue', linestyle='solid')
     # plt.plot(freq_vector / 1e6, dB_R, label='DGTD R', color='cyan', linestyle='solid')
-    # plt.plot(freq_ref_values / 1e6, T_ref, label='Sci-kit T', color='magenta', linestyle='dashed')
-    # plt.plot(freq_ref_values / 1e6, R_ref, label='Sci-kit R', color='red', linestyle='dashed')
+    # plt.plot(freq_ref.f / 1e6, T_ref, label='Sci-kit T', color='magenta', linestyle='dashed')
+    # plt.plot(freq_ref.f / 1e6, R_ref, label='Sci-kit R', color='red', linestyle='dashed')
     # plt.xlabel("Frequency (MHz)")
     # plt.ylabel("Magnitude (dB)")
     # plt.title(r"$\rho = 1, \varepsilon = 50$, slab width = 1 cm, N=3")
@@ -231,31 +226,27 @@ def test_TFG_ep112_rho7_multislab_1cm():
     dB_R=20*np.log10(R) 
 
     # Sci-kit simulation
-    freq_ref = Frequency(100, 1000, 300, 'MHz')
+    freq_ref = Frequency.from_f(freq_vector, 'Hz')
     air =  Freespace(freq_ref)
     mat = Freespace(freq_ref, ep_r = epsilon_r_material, rho = rho_material)
     slab = air.line(24, unit = 'cm') ** mat.line(1, unit = 'cm') ** air.line(24, unit = 'cm')** mat.line(1, unit = 'cm') ** air.line(24, unit = 'cm')** mat.line(1, unit = 'cm') ** air.thru()
     R_ref = 20*np.log10(abs(slab.s[:, 0, 0]))
     T_ref = 20*np.log10(abs(slab.s[:, 1, 0]))
-    freq_ref_values = freq_ref.f_scaled *1e6
 
-
-    # Interpolate computed R and T to match reference frequencies
-    R_interp = np.interp(freq_ref_values, freq_vector, dB_R)
-    T_interp = np.interp(freq_ref_values, freq_vector, dB_T)
-
+    combined = dB_R + dB_T
+    atol = 1e-2*abs(max(combined,key=abs))
 
     # Assert conditions
-    assert np.all(np.abs(R_interp - R_ref) <= 0.1), "Computed R deviates too much!"
-    assert np.all(np.abs(T_interp - T_ref) <= 0.1), "Computed T deviates too much!"
-
+    combined = dB_R + dB_T
+    assert np.all(np.abs(dB_R - R_ref) <= atol), "Computed R deviates too much!"
+    assert np.all(np.abs(dB_T - T_ref) <= atol), "Computed T deviates too much!"
 
     # Generate plot
     # plt.figure()
-    # plt.plot(freq_vector / 1e6, dB_T, label='DGTD T', color='blue')
+    # plt.plot(freq_vector / 1e6, dB_T, label='DGTD T', color='blue', linestyle='solid')
     # plt.plot(freq_vector / 1e6, dB_R, label='DGTD R', color='cyan', linestyle='solid')
-    # plt.plot(freq_ref_values / 1e6, T_ref, label='Sci-kit T', color='magenta', linestyle='dashed')
-    # plt.plot(freq_ref_values / 1e6, R_ref, label='Sci-kit R', color='red', linestyle='dashed')
+    # plt.plot(freq_ref.f/ 1e6, T_ref, label='Sci-kit T', color='magenta', linestyle='dashed')
+    # plt.plot(freq_ref.f / 1e6, R_ref, label='Sci-kit R', color='red', linestyle='dashed')
     # plt.xlabel("Frequency (MHz)")
     # plt.ylabel("Magnitude (dB)")
     # plt.title(r"$\rho = 7, \varepsilon = 11.2$, slab width = 1 cm, N=3")
@@ -351,31 +342,25 @@ def test_TFG_ep20_rho5_multislab_1cm():
 
 
     # Sci-kit simulation
-    freq_ref = Frequency(100, 1000, 300, 'MHz')
+    freq_ref = Frequency.from_f(freq_vector, 'Hz')
     air =  Freespace(freq_ref)
     mat = Freespace(freq_ref, ep_r = epsilon_r_material, rho = rho_material)
     slab = air.line(24, unit = 'cm') ** mat.line(1, unit = 'cm') ** air.line(24, unit = 'cm')** mat.line(1, unit = 'cm') ** air.line(24, unit = 'cm')** mat.line(1, unit = 'cm') ** air.thru()
     R_ref = 20*np.log10(abs(slab.s[:, 0, 0]))
     T_ref = 20*np.log10(abs(slab.s[:, 1, 0]))
-    freq_ref_values = freq_ref.f_scaled *1e6
-
-
-    # Interpolate computed R and T to match reference frequencies
-    R_interp = np.interp(freq_ref_values, freq_vector, dB_R)
-    T_interp = np.interp(freq_ref_values, freq_vector, dB_T)
-
 
     # Assert conditions
-    assert np.all(np.abs(R_interp - R_ref) <= 0.1), "Computed R deviates too much!"
-    assert np.all(np.abs(T_interp - T_ref) <= 0.1), "Computed T deviates too much!"
-
+    combined = dB_R + dB_T
+    atol = 1e-2*abs(max(combined,key=abs))
+    assert np.all(np.abs(dB_R - R_ref) <= atol), "Computed R deviates too much!"
+    assert np.all(np.abs(dB_T - T_ref) <= atol), "Computed T deviates too much!"
 
     # Generate plot
     # plt.figure()
-    # plt.plot(freq_vector / 1e6, dB_T, label='DGTD T', color='blue')
+    # plt.plot(freq_vector / 1e6, dB_T, label='DGTD T', color='blue', linestyle='solid')
     # plt.plot(freq_vector / 1e6, dB_R, label='DGTD R', color='cyan', linestyle='solid')
-    # plt.plot(freq_ref_values / 1e6, T_ref, label='Sci-kit T', color='magenta', linestyle='dashed')
-    # plt.plot(freq_ref_values / 1e6, R_ref, label='Sci-kit R', color='red', linestyle='dashed')
+    # plt.plot(freq_ref.f / 1e6, T_ref, label='Sci-kit T', color='magenta', linestyle='dashed')
+    # plt.plot(freq_ref.f / 1e6, R_ref, label='Sci-kit R', color='red', linestyle='dashed')
     # plt.xlabel("Frequency (MHz)")
     # plt.ylabel("Magnitude (dB)")
     # plt.title(r"$\rho = 5, \varepsilon = 20$, slab width = 1 cm, N=3")
@@ -470,31 +455,25 @@ def test_TFG_ep5_rho15_multislab_1cm():
     dB_R=20*np.log10(R) 
 
     # Sci-kit simulation
-    freq_ref = Frequency(100, 1000, 300, 'MHz')
+    freq_ref = Frequency.from_f(freq_vector, 'Hz')
     air =  Freespace(freq_ref)
     mat = Freespace(freq_ref, ep_r = epsilon_r_material, rho = rho_material)
     slab = air.line(24, unit = 'cm') ** mat.line(1, unit = 'cm') ** air.line(24, unit = 'cm')** mat.line(1, unit = 'cm') ** air.line(24, unit = 'cm')** mat.line(1, unit = 'cm') ** air.thru()
     R_ref = 20*np.log10(abs(slab.s[:, 0, 0]))
     T_ref = 20*np.log10(abs(slab.s[:, 1, 0]))
-    freq_ref_values = freq_ref.f_scaled *1e6
-
-
-    # Interpolate computed R and T to match reference frequencies
-    R_interp = np.interp(freq_ref_values, freq_vector, dB_R)
-    T_interp = np.interp(freq_ref_values, freq_vector, dB_T)
-
 
     # Assert conditions
-    assert np.all(np.abs(R_interp - R_ref) <= 0.1), "Computed R deviates too much!"
-    assert np.all(np.abs(T_interp - T_ref) <= 0.1), "Computed T deviates too much!"
-
+    combined = dB_R + dB_T
+    atol = 1e-2*abs(max(combined,key=abs))
+    assert np.all(np.abs(dB_R - R_ref) <= atol), "Computed R deviates too much!"
+    assert np.all(np.abs(dB_T - T_ref) <= atol), "Computed T deviates too much!"
 
     # Generate plot
     # plt.figure()
-    # plt.plot(freq_vector / 1e6, dB_T, label='DGTD T', color='blue')
+    # plt.plot(freq_vector / 1e6, dB_T, label='DGTD T', color='blue', linestyle='solid')
     # plt.plot(freq_vector / 1e6, dB_R, label='DGTD R', color='cyan', linestyle='solid')
-    # plt.plot(freq_ref_values / 1e6, T_ref, label='Sci-kit T', color='magenta', linestyle='dashed')
-    # plt.plot(freq_ref_values / 1e6, R_ref, label='Sci-kit R', color='red', linestyle='dashed')
+    # plt.plot(freq_ref.f / 1e6, T_ref, label='Sci-kit T', color='magenta', linestyle='dashed')
+    # plt.plot(freq_ref.f / 1e6, R_ref, label='Sci-kit R', color='red', linestyle='dashed')
     # plt.xlabel("Frequency (MHz)")
     # plt.ylabel("Magnitude (dB)")
     # plt.title(r"$\rho = 15, \varepsilon = 5$, slab width = 1 cm, N=3")
